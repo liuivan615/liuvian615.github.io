@@ -4,25 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>交互式解读：看客、权谋与一地鸡毛</title>
+    <!-- Tailwind CDN for utility classes -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Ink & Paper (Monochrome with a single dark red accent) -->
-    <!-- Application Structure Plan: A thematic, multi-section SPA that guides the user through the critique's narrative. The structure uses sections for the 'Onlookers', the 'University', the 'Aftermath', and the final 'Questioning'. This non-linear but guided approach is chosen to deconstruct the complex social commentary, allowing users to focus on each theme (fickle public, cowardly institution, tragic victims) individually, which enhances understanding more than a simple long-form text scroll. Interactions like toggles and hover-reveals are designed to make the user an active participant in exploring the critique. -->
-    <!-- Visualization & Content Choices: Report Info: Public opinion shift -> Goal: Show fickleness -> Viz: Interactive text toggle -> Interaction: Click to switch between 'before' and 'after' text blocks -> Justification: Directly visualizes the "turning of the gun" described in the text. | Report Info: University's reaction sequence -> Goal: Expose calculated inaction -> Viz: CSS Timeline -> Interaction: Hover to reveal commentary -> Justification: Structures the critique of the administration's process chronologically. | Report Info: The two students' fates -> Goal: Highlight mutual tragedy -> Viz: Side-by-side text columns -> Justification: Visually separates and equates the two victims. | All visuals are built with HTML/CSS/JS, no SVG/Mermaid used. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <!--
+      Chosen Palette: Ink & Paper (Monochrome with a single dark red accent)
+      Application Structure Plan: A thematic, multi-section SPA that guides the user through the critique's narrative.
+      The structure uses sections for the 'Onlookers', the 'University', the 'Aftermath', and the final 'Questioning'.
+      This non-linear but guided approach is chosen to deconstruct the complex social commentary, allowing users to
+      focus on each theme (fickle public, cowardly institution, tragic victims) individually, which enhances understanding.
+      Interactions like toggles and click-to-reveal are designed to make the user an active participant in exploring
+      the critique.
+      Visualization & Content Choices:
+        - Public opinion shift: Show fickleness via an interactive text toggle. Users click buttons to switch between
+          'before' and 'after' text blocks, directly visualizing the "turning of the gun" described in the text.
+        - University's reaction sequence: Expose calculated inaction via a timeline with expandable items. On touch devices
+          users click arrows to reveal commentary instead of relying on hover.
+        - The two students' fates: Highlight mutual tragedy via side‑by‑side text columns.
+      All visuals are built with HTML/CSS/JS, no SVG/Mermaid used.
+    -->
     <style>
         body {
             font-family: 'Noto Serif SC', serif;
             background-color: #FDFDFD;
             color: #1a1a1a;
         }
+        /* Navigation tweaks for mobile: wrap items and reduce font size on very small screens */
         .nav-link {
             transition: color 0.3s, border-color 0.3s;
             border-bottom: 2px solid transparent;
         }
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover,
+        .nav-link.active {
             color: #8B0000;
             border-bottom-color: #8B0000;
         }
@@ -42,16 +57,31 @@
             background-color: #8B0000;
             color: #FDFDFD;
         }
+        /* Timeline interaction: hide by default and animate open state */
         .timeline-item-content {
-            transition: opacity 0.3s, visibility 0.3s;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+        }
+        .timeline-item.open .timeline-item-content {
+            opacity: 1;
+            max-height: 500px; /* large enough to reveal full content */
+        }
+        .timeline-toggle svg {
+            transition: transform 0.3s ease;
+        }
+        .timeline-item.open .timeline-toggle svg {
+            transform: rotate(180deg);
         }
     </style>
 </head>
 <body class="bg-[#FDFDFD]">
 
+    <!-- Header Navigation -->
     <header class="sticky top-0 bg-[#FDFDFD]/80 backdrop-blur-sm z-10 shadow-sm">
         <nav class="container mx-auto px-4">
-            <ul class="flex justify-center items-center space-x-4 sm:space-x-8 py-4 text-sm sm:text-base">
+            <ul class="flex flex-wrap justify-center items-center space-x-4 sm:space-x-8 py-4 text-xs sm:text-base">
                 <li><a href="#prologue" class="nav-link p-2">序幕</a></li>
                 <li><a href="#onlookers" class="nav-link p-2">看客的狂欢</a></li>
                 <li><a href="#university" class="nav-link p-2">校方的算盘</a></li>
@@ -63,16 +93,19 @@
 
     <main class="container mx-auto px-4 py-8 sm:py-16">
 
+        <!-- 序幕 / Prologue section -->
         <section id="prologue" class="content-section min-h-[60vh] flex flex-col justify-center items-center text-center">
             <h1 class="text-3xl sm:text-5xl font-bold mb-4">看客、权谋与一地鸡毛</h1>
             <p class="text-lg sm:text-xl text-gray-600 max-w-3xl">一出上演于巍巍学府的滑稽剧，一场吞噬了两个年轻人的舆论盛宴。</p>
             <div class="mt-12 text-gray-500 animate-bounce">
+                <!-- Down arrow to cue scroll -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
             </div>
         </section>
 
+        <!-- Onlookers section with toggle buttons -->
         <section id="onlookers" class="content-section py-16">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-2xl sm:text-3xl font-bold mb-4">看客的狂欢</h2>
@@ -92,47 +125,77 @@
             </div>
         </section>
 
+        <!-- University timeline section with clickable arrows -->
         <section id="university" class="content-section py-16">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-2xl sm:text-3xl font-bold mb-4">校方的算盘</h2>
-                <p class="text-base sm:text-lg text-gray-700 mb-12">它不像一个育人的师长，倒像一个精于计算的掌柜，盘算的无非是自家脸面。将鼠标悬停于时间线上，看它如何一步步打着自己的“算盘”。</p>
+                <p class="text-base sm:text-lg text-gray-700 mb-12">它不像一个育人的师长，倒像一个精于计算的掌柜，盘算的无非是自家脸面。点击每一行右侧的箭头，查看它如何一步步打着自己的“算盘”。</p>
             </div>
             <div class="relative max-w-2xl mx-auto">
                 <div class="border-r-2 border-gray-300 absolute h-full top-0" style="left: 15px"></div>
                 <ul class="space-y-12">
-                    <li class="timeline-item pl-10">
-                        <div class="flex items-center">
-                            <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">1</div>
-                            <h3 class="font-bold text-xl ml-4">舆情汹涌</h3>
+                    <li class="timeline-item pl-10 relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">1</div>
+                                <h3 class="font-bold text-xl ml-4">舆情汹涌</h3>
+                            </div>
+                            <!-- arrow toggle button -->
+                            <button class="timeline-toggle p-2 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                         </div>
-                        <div class="timeline-item-content mt-2 ml-4 opacity-0 visibility-hidden">
+                        <div class="timeline-item-content mt-2 ml-4">
                             <p class="text-gray-700">校方大约也是怕这汹涌的‘民意’的，为求‘息事宁人’...</p>
                         </div>
                     </li>
-                    <li class="timeline-item pl-10">
-                        <div class="flex items-center">
-                             <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">2</div>
-                            <h3 class="font-bold text-xl ml-4">火速处分</h3>
+                    <li class="timeline-item pl-10 relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">2</div>
+                                <h3 class="font-bold text-xl ml-4">火速处分</h3>
+                            </div>
+                            <button class="timeline-toggle p-2 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                         </div>
-                        <div class="timeline-item-content mt-2 ml-4 opacity-0 visibility-hidden">
+                        <div class="timeline-item-content mt-2 ml-4">
                             <p class="text-gray-700">...一道‘记过’的令牌便火速祭出，仿佛这样，公道便立刻得到了伸张，自家的清誉也就此保全了。</p>
                         </div>
                     </li>
-                    <li class="timeline-item pl-10">
-                        <div class="flex items-center">
-                             <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">3</div>
-                            <h3 class="font-bold text-xl ml-4">沉默是金</h3>
+                    <li class="timeline-item pl-10 relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">3</div>
+                                <h3 class="font-bold text-xl ml-4">沉默是金</h3>
+                            </div>
+                            <button class="timeline-toggle p-2 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                         </div>
-                         <div class="timeline-item-content mt-2 ml-4 opacity-0 visibility-hidden">
+                        <div class="timeline-item-content mt-2 ml-4">
                             <p class="text-gray-700">它在汹涌的舆情面前，先是屈服，后是沉默...</p>
                         </div>
                     </li>
-                    <li class="timeline-item pl-10">
-                        <div class="flex items-center">
-                            <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">4</div>
-                            <h3 class="font-bold text-xl ml-4">扭捏复核</h3>
+                    <li class="timeline-item pl-10 relative">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="bg-[#8B0000] rounded-full w-8 h-8 flex items-center justify-center text-white absolute" style="left: 0;">4</div>
+                                <h3 class="font-bold text-xl ml-4">扭捏复核</h3>
+                            </div>
+                            <button class="timeline-toggle p-2 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
                         </div>
-                        <div class="timeline-item-content mt-2 ml-4 opacity-0 visibility-hidden">
+                        <div class="timeline-item-content mt-2 ml-4">
                             <p class="text-gray-700">...最后才扭扭捏捏地出来说要‘复核’。何曾顾及学生的死活！它所丢掉的，是比“舆情”宝贵万倍的“公信”与“担当”。</p>
                         </div>
                     </li>
@@ -140,6 +203,7 @@
             </div>
         </section>
 
+        <!-- Aftermath section -->
         <section id="aftermath" class="content-section py-16">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-2xl sm:text-3xl font-bold mb-4">两败俱伤</h2>
@@ -157,8 +221,9 @@
             </div>
         </section>
 
+        <!-- Questioning section -->
         <section id="questioning" class="content-section py-16 text-center">
-             <div class="max-w-3xl mx-auto">
+            <div class="max-w-3xl mx-auto">
                 <h2 class="text-2xl sm:text-3xl font-bold mb-8">无声的拷问</h2>
                 <div class="space-y-6 text-xl sm:text-2xl leading-relaxed text-gray-800">
                     <p>我有时竟会想，这究竟是时代的进步，还是轮回的悲哀？</p>
@@ -174,8 +239,10 @@
         <p>灵感源于鲁迅先生文风。此页仅为对事件评论的一种艺术化呈现，不代表任何官方立场。</p>
     </footer>
 
+    <!-- Script: handle visibility animations, toggles and timeline interactions -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Intersection observer for animating sections into view
             const sections = document.querySelectorAll('.content-section');
             const navLinks = document.querySelectorAll('.nav-link');
 
@@ -183,7 +250,7 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
-                        
+
                         const id = entry.target.getAttribute('id');
                         navLinks.forEach(link => {
                             link.classList.remove('active');
@@ -199,15 +266,16 @@
                 observer.observe(section);
             });
 
+            // Smooth scroll for nav links
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    const targetId = this.getAttribute('href');
+                    document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
                 });
             });
 
+            // Toggle between public opinion phases
             const btnPhase1 = document.getElementById('btn-phase1');
             const btnPhase2 = document.getElementById('btn-phase2');
             const textPhase1 = document.getElementById('phase1-text');
@@ -227,16 +295,13 @@
                 textPhase1.classList.add('hidden');
             });
 
+            // Timeline: toggle content with arrow click for mobile/desktop
             const timelineItems = document.querySelectorAll('.timeline-item');
             timelineItems.forEach(item => {
-                const content = item.querySelector('.timeline-item-content');
-                item.addEventListener('mouseenter', () => {
-                    content.style.opacity = '1';
-                    content.style.visibility = 'visible';
-                });
-                item.addEventListener('mouseleave', () => {
-                    content.style.opacity = '0';
-                    content.style.visibility = 'hidden';
+                const toggle = item.querySelector('.timeline-toggle');
+                toggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    item.classList.toggle('open');
                 });
             });
         });
